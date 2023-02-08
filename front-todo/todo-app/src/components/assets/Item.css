@@ -1,0 +1,7 @@
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+  }
+  .delete-btn {
+    color:red;
+}
