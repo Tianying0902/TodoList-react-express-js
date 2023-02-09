@@ -1,10 +1,13 @@
 const express = require("express");
+const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.json());
+
 app.get("/", (req, res) => {
   getData(res);
 });
@@ -14,57 +17,45 @@ app.get("/active", (req, res) => {
 app.get("/completed", (req, res) => {
   getCompletedData(res);
 });
+
 app.get("/:id", (req, res) => {
-  if (req.url !== "favicon.ico") {
-    getCertainData(req, res);
-  }
+  getCertainData(req, res);
+});
+app.post("/", bodyParser.urlencoded({ extend: true }), (req, res) => {
+  postData(req, res);
 });
 
-app.use(bodyParser.json());
-app.post("/", bodyParser.urlencoded({ extend: true }), (req, res) => {
-  if (req.url !== "favicon.ico") {
-    postData(req, res);
-  }
-});
 app.delete("/:id", (req, res) => {
   deleteData(req, res);
 });
 app.delete("/", (req, res) => {
-  console.log("yes");
   deleteCompletedData(res);
 });
+
 app.put("/:id", (req, res) => {
-  if (req.body.completed) {
+  if (req.body.completed === 0 || req.body.completed === 1) {
     markData(req, res);
   } else {
     editData(req, res);
   }
 });
 
-app.listen(3000, () => {
-  console.log("server listening on port:3000");
+app.listen(3001, () => {
+  console.log("server listening on port:3001");
 });
+
 function editData(req, res) {
   let condition = req.params.id;
   let content = req.body.task;
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
-
+  const connection = mySqlConnection();
   connection.connect();
 
-  connection.query(
-    "UPDATE todo SET task = '" + content + "' where id = " + condition + " ",
-    (err, rows) => {
-      if (err) throw err;
-      res.send(rows);
-    }
-  );
+  const updateTaskContent =
+    "UPDATE todo SET task = '" + content + "' where id = " + condition + " ";
+  connection.query(updateTaskContent, (err, rows) => {
+    if (err) throw err;
+    res.send(rows);
+  });
 
   connection.end();
 }
@@ -99,26 +90,18 @@ function postData(req, res) {
 
 function deleteData(req, res) {
   let id = req.params.id;
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
+  const connection = mySqlConnection();
 
   connection.connect();
-  const sql = "DELETE from todo where id = " + id + "";
-  connection.query(sql, (err, rows) => {
+  const deleteTask = "DELETE from todo where id = " + id + "";
+  connection.query(deleteTask, (err, rows) => {
     if (err) throw err;
     res.send(rows);
   });
 
   connection.end();
 }
-function deleteCompletedData(res) {
-  const mysql = require("mysql");
+function mySqlConnection() {
   const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -197,48 +180,31 @@ function getCompletedData(res) {
 }
 function getCertainData(req, res) {
   let condition = req.params.id;
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
+  const connection = mySqlConnection();
 
   connection.connect();
 
-  connection.query(
-    "SELECT * from todo where id = " + condition + "",
-    (err, rows) => {
-      if (err) throw err;
-      res.send(rows);
-    }
-  );
+  const selectCertainTask = "SELECT * from todo where id = " + condition + "";
+  connection.query(selectCertainTask, (err, rows) => {
+    if (err) throw err;
+    res.send(rows);
+  });
 
   connection.end();
 }
 function markData(req, res) {
   let condition = req.params.id;
   let status = req.body.completed;
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
+  const connection = mySqlConnection();
 
   connection.connect();
 
-  connection.query(
-    "UPDATE todo SET completed = " + status + " where id = " + condition + " ",
-    (err, rows) => {
-      if (err) throw err;
-      res.send(rows);
-    }
-  );
+  const updateTaskStatus =
+    "UPDATE todo SET completed = " + status + " where id = " + condition + " ";
+  connection.query(updateTaskStatus, (err, rows) => {
+    if (err) throw err;
+    res.send(rows);
+  });
 
   connection.end();
 }
