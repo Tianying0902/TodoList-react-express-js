@@ -15,12 +15,16 @@ app.get("/completed", (req, res) => {
   getCompletedData(res);
 });
 app.get("/:id", (req, res) => {
-  getCertainData(req, res);
+  if (req.url !== "favicon.ico") {
+    getCertainData(req, res);
+  }
 });
 
 app.use(bodyParser.json());
 app.post("/", bodyParser.urlencoded({ extend: true }), (req, res) => {
-  postData(req, res);
+  if (req.url !== "favicon.ico") {
+    postData(req, res);
+  }
 });
 app.delete("/:id", (req, res) => {
   deleteData(req, res);
