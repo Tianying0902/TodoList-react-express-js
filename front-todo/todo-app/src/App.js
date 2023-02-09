@@ -12,12 +12,12 @@ function App(props) {
   // }, []);
   function changeTaskStatus(id) {
     axios
-      .get(`http://localhost:3000/${id}`, { completed: 1 })
+      .get(`http://localhost:3001/${id}`, { completed: 1 })
       .then((response) => {
         if (response.data[0].completed === 0) {
           console.log(response.data[0].completed);
           axios
-            .put(`http://localhost:3000/${id}`, { completed: 1 })
+            .put(`http://localhost:3001/${id}`, { completed: 1 })
             .then((response) => {
               console.log(response.data);
               showAllTasks();
@@ -28,7 +28,7 @@ function App(props) {
         } else {
           console.log("wrong");
           axios
-            .put(`http://localhost:3000/${id}`, { completed: 0 })
+            .put(`http://localhost:3001/${id}`, { completed: 0 })
             .then((response) => {
               console.log(response.data);
               showAllTasks();
@@ -44,20 +44,20 @@ function App(props) {
   }
 
   function showActiveTasks() {
-    fetch("http://localhost:3000/active")
+    fetch("http://localhost:3001/active")
       .then((res) => res.json())
       .then((data) => setTask(data));
     // console.log(task);
   }
   function showCompletedTasks() {
-    fetch("http://localhost:3000/completed")
+    fetch("http://localhost:3001/completed")
       .then((res) => res.json())
       .then((data) => setTask(data));
     // console.log(task);
   }
 
   function showAllTasks() {
-    fetch("http://localhost:3000")
+    fetch("http://localhost:3001")
       .then((res) => res.json())
       .then((data) => setTask(data));
     console.log(task);
@@ -65,7 +65,7 @@ function App(props) {
   function editTask(id, value) {
     console.log(id, value);
     axios
-      .put(`http://localhost:3000/${id}`, { task: value })
+      .put(`http://localhost:3001/${id}`, { task: value })
       .then((response) => {
         console.log(response);
         showAllTasks();
@@ -75,9 +75,10 @@ function App(props) {
       });
   }
   function sendData(e) {
+    // The default method will change data as byte and put it into request body
     e.preventDefault();
     axios
-      .post("http://localhost:3000", {
+      .post("http://localhost:3001", {
         task: taskVal.current.value.trim(),
         completed: false,
       })
@@ -91,9 +92,8 @@ function App(props) {
       });
   }
   function deleteTask(id) {
-    console.log(id);
     axios
-      .delete(`http://localhost:3000/${id}`)
+      .delete(`http://localhost:3001/${id}`)
       .then((response) => {
         console.log(response);
         showAllTasks();
@@ -105,7 +105,7 @@ function App(props) {
   // const status = true;
   function deleteCompletedTask() {
     axios
-      .delete(`http://localhost:3000`)
+      .delete(`http://localhost:3001`)
       .then((response) => {
         console.log(response);
         showAllTasks();
@@ -122,7 +122,7 @@ function App(props) {
     <div className="App">
       <header className="App-header">
         <Header />
-        <form method="post" action="http://localhost:3000" onSubmit={sendData}>
+        <form method="post" action="http://localhost:3001" onSubmit={sendData}>
           <input
             type="text"
             onChange={showRef}

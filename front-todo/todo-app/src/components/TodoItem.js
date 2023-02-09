@@ -17,9 +17,8 @@ const TodoItem = (props) => {
   };
   const editTask = (event) => {
     if (event.keyCode === 13) {
-      setContent(!content);
       let value = document.getElementById(props.id).value;
-      console.log(value);
+      setContent(!content);
       props.editTask(props.id, value);
     }
   };
