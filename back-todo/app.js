@@ -63,23 +63,14 @@ function postData(req, res) {
   const task = { task: req.body.task };
   const taskName = task.task;
   const taskDefault = false;
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
-
-  connection.connect();
-  const sql =
+  const connection = mySqlConnection();
+  const insertNewTask =
     "INSERT into todo(task, completed) VALUES ('" +
     taskName +
     "'," +
     taskDefault +
     ")";
-  connection.query(sql, (err, rows) => {
+  connection.query(insertNewTask, (err, rows) => {
     if (err) throw err;
     res.send(task);
     // console.log(rows);
@@ -109,10 +100,15 @@ function mySqlConnection() {
     password: "root12345",
     database: "nodeSql",
   });
+  return connection;
+}
+
+function deleteCompletedData(res) {
+  const connection = mySqlConnection();
 
   connection.connect();
-  const sql = "DELETE from todo where completed = 1";
-  connection.query(sql, (err, rows) => {
+  const deleteTask = "DELETE from todo where completed = 1";
+  connection.query(deleteTask, (err, rows) => {
     if (err) throw err;
     res.send(rows);
   });
@@ -120,39 +116,26 @@ function mySqlConnection() {
   connection.end();
 }
 function getData(res) {
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
+  const connection = mySqlConnection();
 
   connection.connect();
 
-  connection.query("SELECT * from todo", (err, rows) => {
+  const selectAllTasks = "SELECT * from todo";
+  connection.query(selectAllTasks, (err, rows) => {
     if (err) throw err;
     res.send(rows);
-    // console.log(rows);
   });
 
   connection.end();
 }
 
 function getActiveData(res) {
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
+  const connection = mySqlConnection();
 
   connection.connect();
 
-  connection.query("SELECT * from todo where completed = 0", (err, rows) => {
+  const selectActiveTask = "SELECT * from todo where completed = 0";
+  connection.query(selectActiveTask, (err, rows) => {
     if (err) throw err;
     res.send(rows);
   });
@@ -160,18 +143,12 @@ function getActiveData(res) {
   connection.end();
 }
 function getCompletedData(res) {
-  const mysql = require("mysql");
-  const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root12345",
-    database: "nodeSql",
-  });
+  const connection = mySqlConnection();
 
   connection.connect();
 
-  connection.query("SELECT * from todo where completed = 1", (err, rows) => {
+  const selectCompletedTask = "SELECT * from todo where completed = 1";
+  connection.query(selectCompletedTask, (err, rows) => {
     if (err) throw err;
     res.send(rows);
   });
